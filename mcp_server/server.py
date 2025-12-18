@@ -159,7 +159,19 @@ def main():
         type=str,
         choices=["stdio", "sse"],
         default="stdio",
-        help="MCP transport method"
+        help="MCP transport method (default: stdio)"
+    )
+    parser.add_argument(
+        "--host",
+        type=str,
+        default="0.0.0.0",
+        help="Host to bind to for SSE transport (default: 0.0.0.0)"
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to listen on for SSE transport (default: 8000)"
     )
 
     args = parser.parse_args()
@@ -192,8 +204,10 @@ def main():
     if args.transport == "stdio":
         server.run(transport="stdio")
     else:
-        server.run(transport="sse")
+        print(f"Starting SSE server on http://{args.host}:{args.port}")
+        server.run(transport="sse", host=args.host, port=args.port)
 
 
 if __name__ == "__main__":
     main()
+

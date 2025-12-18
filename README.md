@@ -37,7 +37,7 @@ python -m spacy download en_core_web_sm
 
 ## Usage
 
-### Standalone Server
+### Standalone Server (stdio)
 
 ```bash
 # Run with stdio transport (for Claude Desktop, Gemini CLI, etc.)
@@ -46,6 +46,20 @@ getllamp-mcp --games-dir /path/to/games
 # With feature flags
 getllamp-mcp --enable-valid-actions --enable-object-tree
 ```
+
+### Persistent Server (SSE)
+
+For remote or persistent server deployments, use SSE transport:
+
+```bash
+# Run as HTTP server on default port 8000
+getllamp-mcp --transport sse --games-dir /path/to/games
+
+# Custom host and port
+getllamp-mcp --transport sse --host 127.0.0.1 --port 3000 --games-dir /path/to/games
+```
+
+Clients connect via SSE at `http://host:port/sse`.
 
 ### Docker
 
