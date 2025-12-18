@@ -45,7 +45,7 @@ dev = [
 [project.scripts]
 getllamp-mcp = "mcp_server.server:main"
 
-[tool.hatch.build.targets.wheel]
+[tool.hatch.build]
 packages = ["mcp_server"]
 
 [tool.ruff]
