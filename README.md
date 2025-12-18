@@ -4,7 +4,7 @@ MCP Server for Z-machine interactive fiction games using the Jericho library.
 
 ## Overview
 
-This is a standalone [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that lets LLMs play classic text adventure games (Zork, Hitchhiker's Guide, etc.) through the Jericho Z-machine interpreter.
+This is a standalone [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that lets LLMs play classic text adventure games (Zork, Hitchhiker's Guide, etc.) via the [Jericho](https://github.com/microsoft/jericho) framework for reinforcement learning with interactive fiction.
 
 ## Features
 
