@@ -23,12 +23,11 @@ jobs:
       
       - name: Install dependencies
         run: |
-          uv sync --group dev
-          uv pip install ruff
+          uv sync --extra dev
           uv pip install en-core-web-sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
       
       - name: Lint with ruff
-        run: uv run ruff check .
+        run: uvx ruff check .
       
       - name: Run tests
         run: uv run pytest tests/ -v --tb=short
