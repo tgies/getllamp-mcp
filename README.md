@@ -6,6 +6,16 @@ MCP Server for Z-machine interactive fiction games using the Jericho library.
 
 This is a standalone [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that lets LLMs play classic text adventure games (Zork, Hitchhiker's Guide, etc.) via the [Jericho](https://github.com/microsoft/jericho) framework for reinforcement learning with interactive fiction.
 
+## Getting Z-Machine Games
+
+You'll need Z-machine game files (`.z3`, `.z4`, `.z5`, `.z8`) to play. The [Jericho Game Suite](https://github.com/BYU-PCCL/z-machine-games/tree/master/jericho-game-suite) contains 57 classic games including Zork, Hitchhiker's Guide to the Galaxy, and many others.
+
+```bash
+# Download the game suite
+git clone https://github.com/BYU-PCCL/z-machine-games.git
+# Games are in z-machine-games/jericho-game-suite/
+```
+
 ## Features
 
 - **16 MCP Tools**: Game control, save/restore, valid actions, object inspection
@@ -35,6 +45,36 @@ getllamp-mcp --games-dir /path/to/games
 
 # With feature flags
 getllamp-mcp --enable-valid-actions --enable-object-tree
+```
+
+### Docker
+
+```bash
+# Build the image
+docker build -t getllamp-mcp .
+
+# Run with games directory mounted
+docker run -v /path/to/z-machine-games/jericho-game-suite:/games getllamp-mcp
+
+# With custom arguments
+docker run -v /path/to/games:/games getllamp-mcp --enable-valid-actions
+```
+
+The container expects games at `/games` by default. Mount your game files there:
+
+| Host Path | Container Path | Description |
+|-----------|----------------|-------------|
+| `/path/to/games` | `/games` | Directory containing `.z3`, `.z4`, `.z5`, `.z8` files |
+
+### Docker Compose
+
+```yaml
+services:
+  getllamp-mcp:
+    build: .
+    volumes:
+      - ./z-machine-games/jericho-game-suite:/games:ro
+    command: ["--games-dir", "/games", "--enable-valid-actions"]
 ```
 
 ### Gemini CLI Configuration
@@ -77,3 +117,4 @@ Add to `~/.gemini/settings.json`:
 ## License
 
 MIT
+
