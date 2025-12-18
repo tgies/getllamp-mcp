@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings
 
 class MCPServerConfig(BaseSettings):
     """Configuration for the Jericho MCP server."""
-    
+
     # Feature toggles - can be enabled/disabled at runtime
     enable_valid_actions: bool = Field(
         default=True,
@@ -26,7 +26,7 @@ class MCPServerConfig(BaseSettings):
         default=True,
         description="Track and expose game score"
     )
-    
+
     # Game settings
     games_dir: str = Field(
         default="z-machine-games-master/jericho-game-suite",
@@ -36,7 +36,7 @@ class MCPServerConfig(BaseSettings):
         default=100,
         description="Maximum length of player actions"
     )
-    
+
     # Session settings
     max_sessions: int = Field(
         default=10,
@@ -46,7 +46,7 @@ class MCPServerConfig(BaseSettings):
         default=60,
         description="Session timeout in minutes"
     )
-    
+
     # Valid actions settings
     valid_actions_use_object_tree: bool = Field(
         default=True,
@@ -56,7 +56,7 @@ class MCPServerConfig(BaseSettings):
         default=True,
         description="Use parallel processing for valid action filtering"
     )
-    
+
     model_config = {
         "env_prefix": "MCP_",
         "env_file": ".env",

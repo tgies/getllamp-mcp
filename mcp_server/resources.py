@@ -18,7 +18,7 @@ def _get_session_manager():
 def get_feature_config() -> dict:
     """
     Get current feature configuration.
-    
+
     Returns which optional features are enabled or disabled.
     Use this to understand what tools are available.
     """
@@ -52,7 +52,7 @@ def get_server_info() -> dict:
 def get_interactive_fiction_tips() -> dict:
     """
     Get tips for playing interactive fiction games.
-    
+
     Useful context for LLMs unfamiliar with the genre.
     """
     return {

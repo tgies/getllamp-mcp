@@ -4,8 +4,7 @@ Pytest configuration and shared fixtures.
 
 import asyncio
 from pathlib import Path
-from typing import Generator
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -22,7 +21,7 @@ def event_loop():
 def sample_game_path(tmp_path: Path) -> Path:
     """
     Create a mock game path.
-    
+
     Note: For real Jericho tests, you'd need an actual Z-machine file.
     This fixture is for testing code paths that don't require a real game.
     """
@@ -54,11 +53,11 @@ def mock_jericho_env():
 @pytest.fixture
 def mock_llm_provider():
     """Mock LLM provider for testing."""
-    from harness.llm import LLMProvider, LLMResponse, CostTracker
-    
+    from harness.llm import CostTracker, LLMProvider, LLMResponse
+
     provider = MagicMock(spec=LLMProvider)
     provider.cost_tracker = CostTracker()
-    
+
     async def mock_generate(*args, **kwargs):
         return LLMResponse(
             content="go north",
@@ -69,7 +68,7 @@ def mock_llm_provider():
             cost_usd=0.001,
             latency_ms=50.0
         )
-    
+
     provider.generate = AsyncMock(side_effect=mock_generate)
     provider.get_model_info.return_value = {"provider": "mock", "model": "mock-model"}
     return provider

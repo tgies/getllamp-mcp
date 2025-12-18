@@ -22,7 +22,7 @@ class ZObject:
     child: int
     attributes: list[int]
     properties: list[Any]
-    
+
     @classmethod
     def from_jericho(cls, obj: jericho.ZObject) -> "ZObject":
         """Create from jericho ZObject."""
@@ -35,7 +35,7 @@ class ZObject:
             attributes=list(obj.attr) if hasattr(obj, 'attr') else [],
             properties=list(obj.properties) if hasattr(obj, 'properties') else []
         )
-    
+
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
         return {
@@ -60,7 +60,7 @@ class GameState:
     last_response: str = ""
     done: bool = False
     won: bool = False
-    
+
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
         return {
@@ -83,7 +83,7 @@ class GameInfo:
     path: str
     max_score: int
     version: str
-    
+
     def to_dict(self) -> dict:
         return {
             "name": self.name,
@@ -103,19 +103,19 @@ class JerichoGame:
     game_info: GameInfo
     current_state: GameState
     history: list[tuple[str, str]] = field(default_factory=list)
-    
+
     @classmethod
     def load(cls, game_path: str | Path) -> "JerichoGame":
         """Load a game from a Z-machine file."""
         path = Path(game_path)
         if not path.exists():
             raise FileNotFoundError(f"Game file not found: {path}")
-        
+
         env = FrotzEnv(str(path))
-        
+
         # Get initial observation
         initial_obs, info = env.reset()
-        
+
         # Extract game info
         game_info = GameInfo(
             name=path.stem,
@@ -123,7 +123,7 @@ class JerichoGame:
             max_score=env.get_max_score() if hasattr(env, 'get_max_score') else 0,
             version=str(env.get_version()) if hasattr(env, 'get_version') else "unknown"
         )
-        
+
         # Build initial state
         current_state = GameState(
             location=cls._get_location_name(env),
@@ -134,7 +134,7 @@ class JerichoGame:
             done=False,
             won=False
         )
-        
+
         return cls(
             env=env,
             game_path=path,
@@ -142,7 +142,7 @@ class JerichoGame:
             current_state=current_state,
             history=[]
         )
-    
+
     @staticmethod
     def _get_location_name(env: FrotzEnv) -> str:
         """Get the name of the current location."""
@@ -153,7 +153,7 @@ class JerichoGame:
         except Exception:
             pass
         return "Unknown"
-    
+
     @staticmethod
     def _get_inventory_list(env: FrotzEnv) -> list[str]:
         """Get list of inventory item names."""
@@ -162,28 +162,32 @@ class JerichoGame:
             return [item.name for item in inv if hasattr(item, 'name')]
         except Exception:
             return []
-    
+
     def step(self, action: str) -> tuple[str, GameState]:
         """
         Execute an action and return the response and new state.
-        
+
         Args:
             action: The action string to execute
-            
+
         Returns:
             Tuple of (game response text, updated GameState)
         """
         # Execute action
         observation, reward, done, info = self.env.step(action)
-        
+
         # Check for victory
         won = info.get('won', False) if isinstance(info, dict) else False
-        
+
         # Update state
         self.current_state = GameState(
             location=self._get_location_name(self.env),
             score=self.env.get_score(),
-            moves=self.env.get_moves() if hasattr(self.env, 'get_moves') else self.current_state.moves + 1,
+            moves=(
+                self.env.get_moves()
+                if hasattr(self.env, 'get_moves')
+                else self.current_state.moves + 1
+            ),
             inventory=self._get_inventory_list(self.env),
             description=observation,
             last_action=action,
@@ -191,12 +195,12 @@ class JerichoGame:
             done=done,
             won=won
         )
-        
+
         # Record history
         self.history.append((action, observation))
-        
+
         return observation, self.current_state
-    
+
     def get_valid_actions(
         self,
         use_object_tree: bool = True,
@@ -204,11 +208,11 @@ class JerichoGame:
     ) -> list[str]:
         """
         Get list of valid actions in current state.
-        
+
         Args:
             use_object_tree: Include surrounding object names
             use_parallel: Use parallel filtering (faster)
-            
+
         Returns:
             List of valid action strings
         """
@@ -220,7 +224,7 @@ class JerichoGame:
         except Exception:
             # Fallback to basic actions if valid_actions fails
             return ["look", "inventory", "north", "south", "east", "west", "up", "down"]
-    
+
     def get_world_objects(self) -> list[ZObject]:
         """Get all objects in the game world."""
         try:
@@ -228,7 +232,7 @@ class JerichoGame:
             return [ZObject.from_jericho(obj) for obj in objects]
         except Exception:
             return []
-    
+
     def get_player_location_object(self) -> ZObject | None:
         """Get the ZObject for the player's current location."""
         try:
@@ -238,7 +242,7 @@ class JerichoGame:
         except Exception:
             pass
         return None
-    
+
     def get_nearby_objects(self) -> list[ZObject]:
         """Get objects in the current location (siblings of player)."""
         objects = []
@@ -253,11 +257,11 @@ class JerichoGame:
         except Exception:
             pass
         return objects
-    
+
     def save_state(self) -> bytes:
         """Save current game state to bytes."""
         return self.env.get_state()
-    
+
     def restore_state(self, state: bytes) -> str:
         """Restore game state from bytes, returns current observation."""
         self.env.set_state(state)
@@ -273,18 +277,18 @@ class JerichoGame:
             won=False
         )
         return obs
-    
+
     def close(self) -> None:
         """Close the game environment."""
         try:
             self.env.close()
         except Exception:
             pass
-    
+
     def get_inventory(self) -> list[str]:
         """Get list of inventory item names."""
         return self._get_inventory_list(self.env)
-    
+
     def get_walkthrough(self) -> list[str] | None:
         """Get walkthrough for the game if available."""
         try:
