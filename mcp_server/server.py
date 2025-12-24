@@ -202,7 +202,9 @@ def main():
 
     # Run with selected transport
     if args.transport == "stdio":
-        server.run(transport="stdio")
+        # IMPORTANT: show_banner=False prevents the FastMCP ASCII banner from being
+        # printed to stdout, which would corrupt the JSON-RPC protocol over stdio
+        server.run(transport="stdio", show_banner=False)
     else:
         print(f"Starting SSE server on http://{args.host}:{args.port}")
         server.run(transport="sse", host=args.host, port=args.port)
