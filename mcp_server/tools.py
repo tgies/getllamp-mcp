@@ -88,7 +88,7 @@ def play_action(
     Sends a command to the game parser and returns the response.
     Common actions include: go [direction], take [object], examine [object],
     open [object], use [object], inventory, look, etc.
-    
+
     Returns minimal info for token efficiency. Use get_game_state for full details.
     """
     session = get_session_manager().require_session(session_id)
