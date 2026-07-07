@@ -100,13 +100,15 @@ def play_action(
     response, state = session.game.step(action)
 
     # Return minimal format to save LLM tokens
-    # Use get_game_state for full details like inventory/location
+    # Use get_game_state for full details like inventory
     result = {
         "response": response,
         "score": state.score,
         "moves": state.moves,
         "done": state.done,
-        "won": state.won
+        "won": state.won,
+        "location": state.location,
+        "location_id": state.location_id
     }
 
     return result

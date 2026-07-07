@@ -60,11 +60,13 @@ class GameState:
     last_response: str = ""
     done: bool = False
     won: bool = False
+    location_id: int = 0
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
         return {
             "location": self.location,
+            "location_id": self.location_id,
             "score": self.score,
             "moves": self.moves,
             "inventory": self.inventory,
@@ -132,7 +134,8 @@ class JerichoGame:
             inventory=cls._get_inventory_list(env),
             description=initial_obs,
             done=False,
-            won=False
+            won=False,
+            location_id=cls._get_location_id(env)
         )
 
         return cls(
@@ -153,6 +156,22 @@ class JerichoGame:
         except Exception:
             pass
         return "Unknown"
+
+    @staticmethod
+    def _get_location_id(env: FrotzEnv) -> int:
+        """Get the Z-machine object number of the current location.
+
+        Distinct rooms can share an identical displayed name (e.g. a
+        "twisty little passages, all alike" maze), so callers building a
+        map must key rooms by this id rather than the name.
+        """
+        try:
+            loc = env.get_player_location()
+            if loc and hasattr(loc, 'num'):
+                return loc.num
+        except Exception:
+            pass
+        return 0
 
     @staticmethod
     def _get_inventory_list(env: FrotzEnv) -> list[str]:
@@ -193,7 +212,8 @@ class JerichoGame:
             last_action=action,
             last_response=observation,
             done=done,
-            won=won
+            won=won,
+            location_id=self._get_location_id(self.env)
         )
 
         # Record history
@@ -274,7 +294,8 @@ class JerichoGame:
             inventory=self._get_inventory_list(self.env),
             description=obs,
             done=False,
-            won=False
+            won=False,
+            location_id=self._get_location_id(self.env)
         )
         return obs
 
