@@ -70,11 +70,12 @@ def start_game(
     session = get_session_manager().create_session(game_path, session_id)
     game = session.game
 
+    # No state block: it would duplicate initial_text in description and is
+    # all defaults at move 0 anyway. Use get_game_state for a snapshot.
     return {
         "session_id": session.session_id,
         "game": game.game_info.to_dict(),
         "initial_text": game.current_state.description,
-        "state": game.current_state.to_dict()
     }
 
 
@@ -121,9 +122,15 @@ def get_game_state(session_id: SessionId) -> dict:
     Returns the current score, location, inventory, and other state information.
     """
     session = get_session_manager().require_session(session_id)
+    # Static game info (name/path/version) was already returned by
+    # start_game; only max_score is worth repeating for score framing.
+    # last_action/last_response are dropped - the caller just saw them.
+    state = session.game.current_state.to_dict()
+    state.pop("last_action", None)
+    state.pop("last_response", None)
     return {
-        "state": session.game.current_state.to_dict(),
-        "game": session.game.game_info.to_dict(),
+        "state": state,
+        "max_score": session.game.game_info.max_score,
         "history_length": len(session.game.history)
     }
 
